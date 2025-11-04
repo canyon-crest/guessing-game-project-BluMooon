@@ -33,7 +33,7 @@ if (playerName === "") {
     msg.textContent = "Please enter your name before playing.";
     return;
     }
-    playerName = playerName[0].toUpperCase() + playerName.slice(1);
+    playerName = playerName[0].toUpperCase() + playerName.slice(1).toLowerCase();
 }
 
 score = 0;
@@ -90,26 +90,11 @@ else {
     else if (score > level / 1.5) rating = "bad";
 
     if (score == 1) {
-        msg.textContent =
-        playerName +
-        ", you got it correct in " +
-        score +
-        " try (" +
-        rating +
-        ")! Time: " +
-        roundTime.toFixed(2) +
-        "s";
+        msg.textContent = playerName + ", you got it correct in 1 try (EXTRAORDINARY!) Time: " + roundTime.toFixed(2) + "s";
     }
     else {
-        msg.textContent =
-        playerName +
-        ", you got it correct in " +
-        score +
-        " tries (" +
-        rating +
-        ")! Time: " +
-        roundTime.toFixed(2) +
-        "s";
+        msg.textContent = playerName + ", you got it correct in " + score + " tries (" +
+        rating + ")! Time: " + roundTime.toFixed(2) + "s";
     }
 
     updateScore();
