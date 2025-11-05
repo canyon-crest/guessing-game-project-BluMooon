@@ -1,189 +1,197 @@
-let level, answer, score;
+
 const levelArr = document.getElementsByName("level");
 const scoreArr = [];
-let playerName = "";
-let startMs = 0;
-let totalTime = 0;
-let totalGames = 0;
-let fastestTime = 999999;
+let level, answer, score, playerName = "";
+let startMs = 0, totalTime = 0, totalGames = 0, fastestTime = 999999;
+
+const guess = document.getElementById("guess");
+const guessBtn = document.getElementById("guessBtn");
+const giveUp = document.getElementById("giveUp");
+const msg = document.getElementById("msg");
+const playBtn = document.getElementById("playBtn");
+const date = document.getElementById("date");
+const playerInput = document.getElementById("playerName");
 
 guess.disabled = true;
 guessBtn.disabled = true;
 giveUp.disabled = true;
 
-setInterval(function() {
-date.textContent = time();
-}, 1000);
+setInterval(() => { date.textContent = time(); }, 1000);
 
-playBtn.addEventListener("click", function() {
-play();
-});
-guessBtn.addEventListener("click", function() {
-makeGuess();
-});
-giveUp.addEventListener("click", function() {
-giveUp();
-});
+playBtn.addEventListener("click", play);
+guessBtn.addEventListener("click", makeGuess);
+giveUp.addEventListener("click", giveUpGame);
 
+let replayBtn;
+
+function time() {
+  let d = new Date();
+  return d.toLocaleString();
+}
+
+// some gameplay func
 function play() {
-let nameBox = document.getElementById("playerName");
-if (playerName === "") {
-    playerName = nameBox.value;
-    if (playerName === "" || !isNaN(playerName)) {
+  if (!playerInput.value || !isNaN(playerInput.value)) {
     msg.textContent = "Please enter your name before playing.";
+    flash(msg, "red");
     return;
-    }
-    playerName = playerName[0].toUpperCase() + playerName.slice(1).toLowerCase();
-}
+  }
+  playerName = playerInput.value[0].toUpperCase() + playerInput.value.slice(1).toLowerCase();
 
-score = 0;
-playBtn.disabled = true;
-giveUp.disabled = false;
-guessBtn.disabled = false;
-guess.disabled = false;
-
-for (let i = 0; i < levelArr.length; i++) {
-    if (levelArr[i].checked) {
-    level = levelArr[i].value;
-    }
+  for (let i = 0; i < levelArr.length; i++) {
+    if (levelArr[i].checked) level = levelArr[i].value;
     levelArr[i].disabled = true;
-}
+  }
 
-msg.textContent = playerName + ", guess a number from 1-" + level;
-answer = Math.floor(Math.random() * level) + 1;
-startMs = new Date().getTime();
+  score = 0;
+  playBtn.disabled = true;
+  giveUp.disabled = false;
+  guessBtn.disabled = false;
+  guess.disabled = false;
+  guess.focus();
+
+  document.body.style.background = "linear-gradient(135deg, #444, #111)";
+  msg.textContent = `${playerName}, guess a number from 1-${level}`;
+  fadeIn(msg);
+  answer = Math.floor(Math.random() * level) + 1;
+  startMs = new Date().getTime();
 }
 
 function makeGuess() {
-let userGuess = Number(guess.value);
-if (isNaN(userGuess) || userGuess < 1 || userGuess > level) {
-    msg.textContent = "Enter a valid number from 1-" + level;
+  const userGuess = Number(guess.value);
+  if (isNaN(userGuess) || userGuess < 1 || userGuess > level) {
+    msg.textContent = `Enter a valid number from 1-${level}`;
+    flash(msg, "red");
     return;
+  }
+
+  score++;
+  const diff = Math.abs(userGuess - answer);
+
+  if (userGuess > answer) feedback("high", diff);
+  else if (userGuess < answer) feedback("low", diff);
+  else winGame();
 }
 
-score++;
-let diff = Math.abs(userGuess - answer);
-
-if (userGuess > answer) {
-if (diff <= level / 10) msg.textContent = "Too high! Hot!";
-else if (diff <= level / 4) msg.textContent = "Too high! Warm!";
-else if (diff <= level / 2) msg.textContent = "Too high! Cool!";
-else msg.textContent = "Too high! Cold!";
-    } 
-else if (userGuess < answer) {
-if (diff <= level / 10) msg.textContent = "Too low! Hot!";
-else if (diff <= level / 4) msg.textContent = "Too low! Warm!";
-else if (diff <= level / 2) msg.textContent = "Too low! Cool!";
-else msg.textContent = "Too low! Cold!";
-}
-else {
-    const endMs = new Date().getTime();
-    const roundTime = (endMs - startMs) / 1000;
-    totalTime += roundTime;
-    totalGames++;
-    if (roundTime < fastestTime) {
-    fastestTime = roundTime;
-    }
-
-    let rating = "ok";
-    if (score <= level / 3) rating = "good";
-    else if (score > level / 1.5) rating = "bad";
-
-    if (score == 1) {
-        msg.textContent = playerName + ", you got it correct in 1 try (EXTRAORDINARY!) Time: " + roundTime.toFixed(2) + "s";
-    }
-    else {
-        msg.textContent = playerName + ", you got it correct in " + score + " tries (" +
-        rating + ")! Time: " + roundTime.toFixed(2) + "s";
-    }
-
-    updateScore();
-    updateTimers();
-    reset();
-}
+function giveUpGame() {
+  msg.textContent = `${playerName}, you gave up! The answer was ${answer}`;
+  flash(msg, "orange");
+  score = Number(level);
+  endGame();
 }
 
-function giveUp() {
-msg.textContent = playerName + ", you gave up! The answer was " + answer;
-score = Number(level);
-const endMs = new Date().getTime();
-totalTime += (endMs - startMs) / 1000;
-totalGames++;
-updateScore();
-updateTimers();
-reset();
+function winGame() {
+  const endMs = new Date().getTime();
+  const roundTime = (endMs - startMs) / 1000;
+  totalTime += roundTime;
+  totalGames++;
+  if (roundTime < fastestTime) fastestTime = roundTime;
+
+  const rating = score <= level / 3 ? "good" : score > level / 1.5 ? "bad" : "ok";
+  msg.innerHTML = `${playerName}, you got it correct in <b>${score}</b> tries (${rating.toUpperCase()})!<br>Time: ${roundTime.toFixed(2)}s 🎉`;
+  confetti();
+  flash(msg, "lime");
+  endGame();
+}
+
+function feedback(direction, diff) {
+  let feedbackMsg = `Too ${direction}! `;
+  if (diff <= level / 10) feedbackMsg += "🔥 Hot!";
+  else if (diff <= level / 4) feedbackMsg += "🌡️ Warm!";
+  else if (diff <= level / 2) feedbackMsg += "🧊 Cool!";
+  else feedbackMsg += "🥶 Cold!";
+  msg.textContent = feedbackMsg;
+  colorTemperature(diff);
+  bounce(msg);
+}
+
+function endGame() {
+  updateScore();
+  updateTimers();
+  reset();
+
+// replay btn
+  replayBtn = document.createElement("button");
+  replayBtn.textContent = "Play Again?";
+  replayBtn.classList.add("replay");
+  document.body.appendChild(replayBtn);
+  replayBtn.addEventListener("click", () => {
+    replayBtn.remove();
+    play();
+  });
 }
 
 function reset() {
-guessBtn.disabled = true;
-guess.disabled = true;
-giveUp.disabled = true;
-guess.value = "";
-playBtn.disabled = false;
-
-for (let i = 0; i < levelArr.length; i++) {
-    levelArr[i].disabled = false;
-}
+  guessBtn.disabled = true;
+  guess.disabled = true;
+  giveUp.disabled = true;
+  guess.value = "";
+  playBtn.disabled = false;
+  for (let i = 0; i < levelArr.length; i++) levelArr[i].disabled = false;
+  setTimeout(() => document.body.style.background = "linear-gradient(120deg, #222, #111)", 1500);
 }
 
+// lb improve
 function updateScore() {
-scoreArr.push(score);
-scoreArr.sort(function(a, b) {
-    return a - b;
-});
-let lb = document.getElementsByName("leaderboard");
-wins.textContent = "Total wins: " + scoreArr.length;
-let sum = 0;
-for (let i = 0; i < scoreArr.length; i++) {
+  scoreArr.push(score);
+  scoreArr.sort((a, b) => a - b);
+  const lb = document.getElementsByName("leaderboard");
+  wins.textContent = "Total wins: " + scoreArr.length;
+
+  let sum = 0;
+  for (let i = 0; i < scoreArr.length; i++) {
     sum += scoreArr[i];
-    if (i < lb.length) {
-    if (scoreArr[i] == 1) {
-        lb[i].textContent = scoreArr[i] + " try";
-    } else {
-        lb[i].textContent = scoreArr[i] + " tries";
-    }
-    }
-}
-let avg = sum / scoreArr.length;
-avgScore.textContent = "Average Score: " + avg.toFixed(2);
+    if (i < lb.length) lb[i].textContent = scoreArr[i] + (scoreArr[i] === 1 ? " try" : " tries");
+  }
+  const avg = sum / scoreArr.length;
+  avgScore.textContent = "Average Score: " + avg.toFixed(2);
 }
 
 function updateTimers() {
-  let avgT = totalTime / totalGames;
-  let fastP = document.getElementById("fastest");
-  let avgP = document.getElementById("avgTime");
+  const avgT = totalTime / totalGames;
+  document.getElementById("fastest").textContent = "Fastest game: " + fastestTime.toFixed(2) + "s";
+  document.getElementById("avgTime").textContent = "Average time: " + avgT.toFixed(2) + "s";
+}
 
-  if (fastP) {
-    fastP.textContent = "Fastest game: " + fastestTime.toFixed(2) + "s";
+// vis animation
+function colorTemperature(diff) {
+  const base = document.body;
+  if (diff <= level / 10) base.style.background = "radial-gradient(circle, crimson, black)";
+  else if (diff <= level / 4) base.style.background = "radial-gradient(circle, orange, black)";
+  else if (diff <= level / 2) base.style.background = "radial-gradient(circle, dodgerblue, black)";
+  else base.style.background = "radial-gradient(circle, darkslateblue, black)";
+}
+
+function flash(el, color) {
+  el.style.color = color;
+  el.style.transition = "color 0.3s ease";
+  setTimeout(() => (el.style.color = "white"), 400);
+}
+
+function bounce(el) {
+  el.style.transform = "scale(1.2)";
+  el.style.transition = "transform 0.2s ease";
+  setTimeout(() => (el.style.transform = "scale(1)"), 200);
+}
+
+function fadeIn(el) {
+  el.style.opacity = 0;
+  el.style.transition = "opacity 0.8s";
+  setTimeout(() => (el.style.opacity = 1), 50);
+}
+
+// confetti!!
+function confetti() {
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement("div");
+    c.classList.add("confetti");
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+    c.style.animationDuration = 2 + Math.random() * 3 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
   }
-  if (avgP) {
-    avgP.textContent = "Average time: " + avgT.toFixed(2) + "s";
-  }
 }
 
 
-function time() {
-let d = new Date();
-let months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-];
-let month = months[d.getMonth()];
-let day = d.getDate();
-let suffix = "th";
-if (day == 1 || day == 21 || day == 31) suffix = "st";
-else if (day == 2 || day == 22) suffix = "nd";
-else if (day == 3 || day == 23) suffix = "rd";
-let year = d.getFullYear();
-let hour = d.getHours();
-let min = d.getMinutes();
-let sec = d.getSeconds();
-let ampm = "AM";
-if (hour >= 12) {
-    ampm = "PM";
-    if (hour > 12) hour = hour - 12;
-}
-if (min < 10) min = "0" + min;
-if (sec < 10) sec = "0" + sec;
-return month + " " + day + suffix + ", " + year + ", " + hour + ":" + min + ":" + sec + " " + ampm;
-}
+
