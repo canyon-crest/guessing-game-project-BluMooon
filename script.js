@@ -176,7 +176,16 @@ function winGame() {
     replayBtn = document.createElement("button");
     replayBtn.textContent = "Play Again?";
     replayBtn.classList.add("replay");
-    document.body.appendChild(replayBtn);
+    // insert the replay button next to the guess button so it's visually close
+    if (guessBtn && guessBtn.parentNode) {
+      guessBtn.parentNode.insertBefore(replayBtn, guessBtn.nextSibling);
+      // make it sit inline near the guess button (override.default margins)
+      replayBtn.style.display = "inline-block";
+      replayBtn.style.margin = "0 0 0 8px";
+      replayBtn.style.verticalAlign = "middle";
+    } else {
+      document.body.appendChild(replayBtn);
+    }
     replayBtn.addEventListener("click", () => {
       replayBtn.remove();
       replayBtn = null;
