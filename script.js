@@ -28,13 +28,28 @@ function time() {
   let d = new Date();
   return d.toLocaleString();
 }
-
 function indicateWrongGuess() {
-  document.body.classList.add('shake');
-  setTimeout(() => document.body.classList.remove('shake'), 400);
+  const container = document.getElementById("gameContainer");
+  container.classList.add('vibrate');
+  setTimeout(() => container.classList.remove('vibrate'), 500);
+
   document.body.classList.add('wrong-guess');
-  setTimeout(() => document.body.classList.remove('wrong-guess'), 600);
+  setTimeout(() => document.body.classList.remove('wrong-guess'), 500);
 }
+
+function indicateCorrectGuess() {
+  const container = document.getElementById("gameContainer");
+  container.classList.add('stomp');
+  setTimeout(() => container.classList.remove('stomp'), 700);
+
+  msg.classList.add('victory-text');
+  setTimeout(() => msg.classList.remove('victory-text'), 2500);
+
+  document.body.classList.add('correct-guess');
+  setTimeout(() => document.body.classList.remove('correct-guess'), 800);
+}
+
+
 
 
 function crossfadeBackground(newBg, duration = 600, options = {}) {
@@ -121,7 +136,10 @@ function makeGuess() {
     feedback("low", diff);
     indicateWrongGuess();
   }
-  else winGame();
+  else {
+    indicateCorrectGuess();
+    winGame();
+  }
 }
 
 function giveUpGame() {
@@ -154,6 +172,17 @@ function winGame() {
       playBtn.textContent = "Play Again?";
     }, 1550);
   }, 2500);
+  setTimeout(() => {
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement("div");
+      s.classList.add("sparkle");
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.top = Math.random() * 100 + "vh";
+      s.style.animationDelay = Math.random() * 2 + "s";
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 8000);
+    }
+  }, 2600);
 }
 
 function feedback(direction, diff) {

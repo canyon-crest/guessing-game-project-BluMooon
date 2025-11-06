@@ -7,36 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   </head>
   <body>
-    <p id="date"></p>
+    <div id="gameContainer">
+      <p id="date"></p>
 
-    <h3>Name</h3>
-    <input type="text" id="playerName" placeholder="Enter your name">
+      <h3>Name</h3>
+      <input type="text" id="playerName" placeholder="Enter your name">
 
-    <h3>Level</h3>
-    <input type="radio" name="level" id="e" value="3" checked><label for="e">Easy</label>
-    <input type="radio" name="level" id="m" value="10"><label for="m">Medium</label>
-    <input type="radio" name="level" id="h" value="100"><label for="h">Hard</label>
+      <h3>Level</h3>
+      <input type="radio" name="level" id="e" value="3" checked><label for="e">Easy</label>
+      <input type="radio" name="level" id="m" value="10"><label for="m">Medium</label>
+      <input type="radio" name="level" id="h" value="100"><label for="h">Hard</label>
 
-    <button id="playBtn">Play</button>
+      <button id="playBtn">Play</button>
 
-    <h3 id="msg">Select a Level</h3>
-    <input type="text" id="guess">
-    <button id="guessBtn" disabled>Guess</button>
-    <button id="giveUp" disabled>Give Up</button>
+      <h3 id="msg">Select a Level</h3>
+      <input type="text" id="guess">
+      <button id="guessBtn" disabled>Guess</button>
+      <button id="giveUp" disabled>Give Up</button>
 
-    <h3>Stats</h3>
-    <p id="wins">Total wins: 0</p>
-    <p id="avgScore">Average Score: </p>
+      <h3>Stats</h3>
+      <p id="wins">Total wins: 0</p>
+      <p id="avgScore">Average Score: </p>
 
-    <h3>Leaderboard</h3>
-    <div id="leaderboard">
-      <ol>
-        <li name="leaderboard">100</li>
-        <li name="leaderboard">100</li>
-        <li name="leaderboard">100</li>
-      </ol>
+      <h3>Leaderboard</h3>
+      <div id="leaderboard">
+        <ol>
+          <li name="leaderboard">100</li>
+          <li name="leaderboard">100</li>
+          <li name="leaderboard">100</li>
+        </ol>
+      </div>
+      <p id="fastest">Fastest game: </p>
+      <p id="avgTime">Average time: </p>
     </div>
-    <p id="fastest">Fastest game: </p>
-    <p id="avgTime">Average time: </p>
   </body>
+
 </html>
