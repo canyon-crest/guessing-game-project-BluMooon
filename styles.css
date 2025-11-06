@@ -12,9 +12,21 @@ body {
 }
 
 html, body {
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
   overflow-x: hidden;
-  overflow-y: hidden;
+  scroll-behavior: smooth;
 }
+
+.sparkle, .confetti, .wrong-guess::before {
+  pointer-events: none;
+}
+
+body::before, body::after {
+  position: absolute;
+}
+
 
 #date {
   margin-top: 20px;
@@ -290,4 +302,38 @@ body.correct-guess::before {
 @keyframes sparkleTwinkle {
   0%, 100% { opacity: 0; transform: scale(0.5); }
   50% { opacity: 1; transform: scale(1.4); }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+}
+
+.confetti {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+}
+
+body::before, body::after {
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed !important;
+  inset: 0;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-5px, 3px); }
+  40% { transform: translate(5px, -3px); }
+  60% { transform: translate(-3px, 5px); }
+  80% { transform: translate(3px, -5px); }
+}
+
+body.shake {
+  animation: screenShake 0.4s ease;
+  overflow-y: hidden; 
 }
