@@ -29,6 +29,14 @@ function time() {
   return d.toLocaleString();
 }
 
+function indicateWrongGuess() {
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 400);
+  document.body.classList.add('wrong-guess');
+  setTimeout(() => document.body.classList.remove('wrong-guess'), 600);
+}
+
+
 function crossfadeBackground(newBg, duration = 600, options = {}) {
   const behind = !!options.behind;
   const overlay = document.createElement("div");
@@ -105,8 +113,14 @@ function makeGuess() {
   }
   score++;
   const diff = Math.abs(userGuess - answer);
-  if (userGuess > answer) feedback("high", diff);
-  else if (userGuess < answer) feedback("low", diff);
+  if (userGuess > answer) { 
+    feedback("high", diff); 
+    indicateWrongGuess();
+  }
+  else if (userGuess < answer) {
+    feedback("low", diff);
+    indicateWrongGuess();
+  }
   else winGame();
 }
 
